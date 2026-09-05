@@ -1,3 +1,6 @@
+//Martin Hofer Ochoa - 22.368.055-0 - ICCI
+//Vicente Jara
+
 package taller01;
 
 public class Main {
