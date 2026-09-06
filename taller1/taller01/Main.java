@@ -15,12 +15,7 @@ public class Main {
 		String[] apellidos = new String[100];
 		String[] ruts = new String[100];
 		String[] paralelos = new String[100];
-		for (int i = 0; i < nombres.length;i++) {
-			nombres[i] = "a";
-			apellidos[i] = "a";
-			ruts[i] = "a";
-			paralelos[i] = "a";
-		}
+		
 		int cantAlumnos = leerAlumnos(nombres, apellidos, ruts, paralelos);
 
 	}
