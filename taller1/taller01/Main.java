@@ -1,5 +1,5 @@
 //Martin Hofer Ochoa - 22.368.055-0 - mrtinzinn
-//Vicente Jara
+//Vicente Jara Huerta - 22.108.526-4 -
 //https://github.com/mrtinzinn/Taller1_POO/tree/main	
 
 package taller01;
