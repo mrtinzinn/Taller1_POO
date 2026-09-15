@@ -9,28 +9,106 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Main {
+	public static Scanner scanner = new Scanner(System.in);
+	static int cantAlumnos = 0;
+	static String[] nombres = new String[100];
+	static String[] apellidos = new String[100];
+	static String[] ruts = new String[100];
+	static String[] paralelos = new String[100];
+	static String[] solicitud = new String[100];
+	static String[] grupo = new String[100];
+	static String[] rechazados = new String[100];
 
 	public static void main(String[] args) throws FileNotFoundException {
-		Scanner scanner = new Scanner(System.in);
-		String[] nombres = new String[100];
-		String[] apellidos = new String[100];
-		String[] ruts = new String[100];
-		String[] paralelos = new String[100];// CREO LAS LISTAS QUE ALMACENARAN LOS DATOS
 
 		printMenu();
 		int opcion = scanner.nextInt();
 		opcion = controlError(opcion);
-		//CREAR WHILE Y OPCIONES DEL MENU
+		// CREAR WHILE Y OPCIONES DEL MENU
+
+		while (opcion != 7) {
+
+			if (opcion == 1) { // CARGAR ARCHIVOS
+				System.out.println("Cargando archivos...");
+				cantAlumnos = leerAlumnos();
+				solicitudes();
+				System.out.println("Los archivos han sido cargados con exito.");
+
+			}
+			if (opcion == 2) {
+
+				opcion2();
+			}
+
+			System.out.println();
+			printMenu();
+			opcion = scanner.nextInt();
+			opcion = controlError(opcion);
+		}
+		System.out.println("Saliendo... Nos vemos!");
+	}
+
+	private static void opcion2() {
+		int contGrupo = 0;
+		int contRechazo = 0;
+		for (int i = 0; i < solicitud.length; i++) {
+			
+			if (solicitud[i] != null) {
+
+				String linea = solicitud[i];
+				String[] partes = linea.split(" ");
+				
+				String nombre = partes[0];
+				String apellido = partes[1];
+
+				boolean pertenece = busqueda(nombre, apellido);
+				
+				if (!pertenece) {
+					boolean encontrado = false;
+					for(int j = 0;j < cantAlumnos;j++) {
+						
+						if(nombres[j].equalsIgnoreCase(nombre) && apellidos[j].equalsIgnoreCase(apellido)) {
+							encontrado = true;
+							break;
+						}
+					}
+					if (encontrado) {
+						grupo[contGrupo] = nombre + " " + apellido;
+						System.out.println(nombre + " " + apellido + " ->Añadido");
+						contGrupo++;
+					}else {
+						rechazados[contRechazo] = nombre + " " + apellido;
+						System.out.println(nombre + " " + apellido + " -> Rechazado");
+						contRechazo++;
+					}
+				}
+			}
+		}
+
+	}
+
+	private static Boolean busqueda(String nombre, String apellido) {
+
+		for (int i = 0; i < grupo.length; i++) {
+
+			if(grupo[i]!= null) {
+				if(grupo[i].equalsIgnoreCase(nombre + " " + apellido)) {
+					return true;
+				}
+			}
+			if(rechazados[i] != null) {
+				if(rechazados[i].equalsIgnoreCase(nombre + " " + apellido)){
+					return true;
+				}
+			}
+		}
 		
-		int cantAlumnos = leerAlumnos(nombres, apellidos, ruts, paralelos);
-		String[] grupo = new String[cantAlumnos];
-		String[] rechazados = new String[cantAlumnos];
-		solicitudes(nombres, apellidos, cantAlumnos, grupo, ruts, paralelos, rechazados);
+		return false;
 	}
 
 	private static int controlError(int opcion) {
-		Scanner scanner = new Scanner(System.in);
-		while (opcion <= 0 && opcion > 7) { //En caso de que no se seleccione una opcion dentro del rango
+
+		while (opcion < 1 || opcion > 7) { // En caso de que no se seleccione una opcion dentro del rango
 			System.out.print("Porfavor , seleccione una opcion valida:");
 			opcion = scanner.nextInt();
 		}
@@ -51,32 +129,22 @@ public class Main {
 
 	}
 
-	private static void solicitudes(String[] nombres, String[] apellidos, int cantAlumnos, String[] grupo,
-			String[] ruts, String[] paralelos, String[] rechazados) throws FileNotFoundException {
+	private static void solicitudes() throws FileNotFoundException {
 		File arch = new File("txt's/solicitudes.txt");
 		Scanner sFile = new Scanner(arch);
+		int cont = 0;
 		while (sFile.hasNextLine()) {
 			String linea = sFile.nextLine();
 			String[] partes = linea.split("-");
 			String nombre = partes[0];
 			String apellido = partes[1];
-			int cont = 0;
-			int cont2 = 0;
-			for (int i = 0; i < cantAlumnos; i++) {
-				if (nombres[i].equals(nombre) && apellidos[i].equals(apellido)) {
-					grupo[cont] = nombres[i] + " " + apellidos[i] + " " + ruts[i] + " " + paralelos[i];// ESTO AUN NO
-																										// ESTA
-																										// TERMINADO
-				} else {
-					rechazados[cont2] = nombre + " " + apellido;
-				}
-			}
-		}
 
+			solicitud[cont] = nombre + " " + apellido;
+			cont++;
+		}
 	}
 
-	private static int leerAlumnos(String[] nombres, String[] apellidos, String[] ruts, String[] paralelos)
-			throws FileNotFoundException {
+	private static int leerAlumnos() throws FileNotFoundException {
 
 		File arch = new File("txt's/alumnos.txt");
 		Scanner sFile = new Scanner(arch);
