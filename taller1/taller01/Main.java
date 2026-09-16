@@ -18,7 +18,7 @@ public class Main {
 	static String[] grupo = new String[100];
 	static String[] rechazados = new String[100];
 	public static boolean lectura = false; // Creo un booleando que verifica si se leyeron ambos archivos para que no se
-											// caiga el codigo.
+	public static boolean procesados = false;										// caiga el codigo.
 
 	public static void main(String[] args) throws FileNotFoundException {
 
@@ -43,6 +43,7 @@ public class Main {
 
 				if (lectura) {
 					opcion2();
+					procesados = true;
 				} else {
 					System.out.println(
 							"No se han cargado los archivos , por favor seleccione la opcion 1 para poder filtrar...");
@@ -56,7 +57,7 @@ public class Main {
 				int respuesta = scanner.nextInt();
 				respuesta = controlError(respuesta, 1, 2);
 				scanner.nextLine();
-				if(lectura) {
+				if(lectura && procesados) {
 					if (respuesta == 1) {
 
 					    System.out.print("Ingrese el nombre y apellido de la persona: ");
