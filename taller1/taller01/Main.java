@@ -18,7 +18,7 @@ public class Main {
 	static String[] grupo = new String[100];
 	static String[] rechazados = new String[100];
 	public static boolean lectura = false; // Creo un booleando que verifica si se leyeron ambos archivos para que no se
-	public static boolean procesados = false;										// caiga el codigo.
+	public static boolean procesados = false; // caiga el codigo.
 
 	public static void main(String[] args) throws FileNotFoundException {
 
@@ -57,84 +57,83 @@ public class Main {
 				int respuesta = scanner.nextInt();
 				respuesta = controlError(respuesta, 1, 2);
 				scanner.nextLine();
-				if(lectura && procesados) {
+				if (lectura && procesados) {
 					if (respuesta == 1) {
 
-					    System.out.print("Ingrese el nombre y apellido de la persona: ");
-					    String persona = scanner.nextLine();
+						System.out.print("Ingrese el nombre y apellido de la persona: ");
+						String persona = scanner.nextLine();
 
-					    String[] partes = persona.split(" ");
+						String[] partes = persona.split(" ");
 
-					    String nombre = partes[0];
-					    String apellido = partes[1];
+						String nombre = partes[0];
+						String apellido = partes[1];
 
-					    boolean estaEnGrupo = false;
-					    boolean estaEnAlumnos = false;
+						boolean estaEnGrupo = false;
+						boolean estaEnAlumnos = false;
 
-					    // BUSCAR SI YA ESTA EN EL GRUPO
-					    for (int i = 0; i < grupo.length; i++) {
+						// BUSCAR SI YA ESTA EN EL GRUPO
+						for (int i = 0; i < grupo.length; i++) {
 
-					        if (grupo[i] != null) {
+							if (grupo[i] != null) {
 
-					            if (grupo[i].equalsIgnoreCase(nombre + " " + apellido)) {
+								if (grupo[i].equalsIgnoreCase(nombre + " " + apellido)) {
 
-					                estaEnGrupo = true;
-					                break;
-					            }
-					        }
-					    }
+									estaEnGrupo = true;
+									break;
+								}
+							}
+						}
 
-					    if (estaEnGrupo) {
-					        System.out.println("La persona ya esta en el grupo.");
+						if (estaEnGrupo) {
+							System.out.println("La persona ya esta en el grupo.");
 
-					    } else {
+						} else {
 
-					        // BUSCAR SI LA PERSONA EXISTE EN ALUMNOS
-					        for (int i = 0; i < cantAlumnos; i++) {
+							// BUSCAR SI LA PERSONA EXISTE EN ALUMNOS
+							for (int i = 0; i < cantAlumnos; i++) {
 
-					            if (nombres[i].equalsIgnoreCase(nombre)
-					                    && apellidos[i].equalsIgnoreCase(apellido)) {
-					                estaEnAlumnos = true;
-					                break;
-					            }
-					        }
+								if (nombres[i].equalsIgnoreCase(nombre) && apellidos[i].equalsIgnoreCase(apellido)) {
+									estaEnAlumnos = true;
+									break;
+								}
+							}
 
-					        if (estaEnAlumnos) {
-					            // BUSCAR ESPACIO EN EL GRUPO
-					            boolean agregado = false;
+							if (estaEnAlumnos) {
+								// BUSCAR ESPACIO EN EL GRUPO
+								boolean agregado = false;
 
-					            for (int i = 0; i < grupo.length; i++) {
-					                if (grupo[i] == null) {
-					                    grupo[i] = nombre + " " + apellido;
-					                    System.out.println("La persona fue añadida al grupo.");
-					                    agregado = true;
-					                    break;
-					                }
-					            }
+								for (int i = 0; i < grupo.length; i++) {
+									if (grupo[i] == null) {
+										grupo[i] = nombre + " " + apellido;
+										System.out.println("La persona fue añadida al grupo.");
+										agregado = true;
+										break;
+									}
+								}
 
-					            if (!agregado) {
-					                System.out.println("El grupo esta lleno.");
-					            }
+								if (!agregado) {
+									System.out.println("El grupo esta lleno.");
+								}
 
-					        } else {
-					            System.out.println("La persona no forma parte de ningun paralelo");
+							} else {
+								System.out.println("La persona no forma parte de ningun paralelo");
 
-					            // AGREGAR A RECHAZADOS
-					            boolean agregado = false;
-					            for (int i = 0; i < rechazados.length; i++) {
+								// AGREGAR A RECHAZADOS
+								boolean agregado = false;
+								for (int i = 0; i < rechazados.length; i++) {
 
-					                if (rechazados[i] == null) {
-					                    rechazados[i] = nombre + " " + apellido;
-					                    System.out.println("La persona fue añadida a rechazados...");
-					                    agregado = true;
-					                    break;
-					                }
-					            }
-					            if (!agregado) {
-					                System.out.println("El grupo de rechazados esta lleno...");
-					            }
-					        }
-					    }
+									if (rechazados[i] == null) {
+										rechazados[i] = nombre + " " + apellido;
+										System.out.println("La persona fue añadida a rechazados...");
+										agregado = true;
+										break;
+									}
+								}
+								if (!agregado) {
+									System.out.println("El grupo de rechazados esta lleno...");
+								}
+							}
+						}
 					}
 					if (respuesta == 2) {
 						System.out.print("Ingrese el rut de la persona: ");
@@ -149,44 +148,53 @@ public class Main {
 							}
 						}
 						if (res) { // SI EL RUT PERTENECE AL GRUPO
-							System.out.println("Persona: " + nombres[pos] + " " + apellidos[pos]);
-
+							String persona = nombres[pos] + " " + apellidos[pos];
+							System.out.println("Persona: " + persona);
+							boolean estaEnGrupo = false;
 							for (int j = 0; j < grupo.length; j++) {
 
-								if (nombres[pos].equalsIgnoreCase(nombres[j])
-										&& apellidos[pos].equalsIgnoreCase(nombres[j])) {
-
-									System.out.println("Se encontro a la persona en el grupo...");
-									break;
-
-								}
-								if (grupo[j] == null) {
-									grupo[j] = nombres[pos] + " " + apellidos[pos];
-								}
-								if (j == grupo.length - 1) {
-
-									if (grupo[j] != null) {
-
-										System.out.println("Lo sentimos, el grupo esta lleno...");
+								if (grupo[j] != null) {
+									if (grupo[j].equalsIgnoreCase(persona)) {
+										estaEnGrupo = true;
+										break;
 									}
 								}
 							}
-						} else {
-							System.out.println("El rut no pertenece a ningun paralelo");
-							System.out.println("No tenemos su nombre, por lo que se agregara el RUT en los rechazados.");
-							for (int i = 0; i < rechazados.length; i++) {
-								if (rechazados[i] == null) {
-									rechazados[i] = rut;
+							if (estaEnGrupo) {
+								System.out.println("La persona ya esta en el grupo.");
+							} else {
+								// BUSCAR EN EL GRUPO
+								boolean agregado = false;
+								for (int i = 0; i < grupo.length; i++) {
+									if (grupo[i] == null) {
+										grupo[i] = persona;
+										System.out.println("La persona fue añadida al grupo.");
+										agregado = true;
+										break;
+									}
 								}
-								if (i == rechazados.length - 1) {
-									if (rechazados[i] != null) {
-										System.out.println("El grupo de rechazados esta lleno...");
+								if (!agregado) {
+									System.out.println("El grupo esta lleno");
+								} else {
+									System.out.println("El rut no pertenece a ningun paralelo.");
+									System.out.println(
+											"No tenemos su nombre ,por lo que se agregara el RUT en los rechazados");
+									for (int i = 0; i < rechazados.length; i++) {
+										if (rechazados[i] == null) {
+											rechazados[i] = rut;
+											System.out.println("El rut fue añadido a rechazados");
+											agregado = true;
+											break;
+										}
+									}
+									if (!agregado) {
+										System.out.println("El grupo esta lleno.");
 									}
 								}
 							}
 						}
 					}
-				}else {
+				} else {
 					System.out.println("Lo lamentamos , no se han podido cargar los archivos");
 				}
 			}
@@ -219,16 +227,18 @@ public class Main {
 
 				if (!pertenece) {
 					boolean encontrado = false;
+					int pos = 0;
 					for (int j = 0; j < cantAlumnos; j++) {
 
 						if (nombres[j].equalsIgnoreCase(nombre) && apellidos[j].equalsIgnoreCase(apellido)) {
 							encontrado = true;
+							pos = j;
 							break;
 						}
 					}
 					if (encontrado) {
 						grupo[contGrupo] = nombre + " " + apellido;
-						System.out.println("[OK] " + nombre + " " + apellido + " ->Añadido a ");
+						System.out.println("[OK] " + nombre + " " + apellido + " -> Añadido a paralelo " + paralelos[pos] );
 						contGrupo++;
 					} else {
 						rechazados[contRechazo] = nombre + " " + apellido;
