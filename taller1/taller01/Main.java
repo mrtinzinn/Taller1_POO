@@ -52,13 +52,92 @@ public class Main {
 			if (opcion == 3) {
 				opcion3();
 			}
-
+			if(opcion == 4) {
+				opcion4();
+			}
 			System.out.println();
 			printMenu();
 			opcion = scanner.nextInt();
 			opcion = controlError(opcion, 1, 7);
 		}
 		System.out.println("Saliendo... Nos vemos!");
+	}
+
+	private static void opcion4() {
+		System.out.println("-- Administracion del curso --");
+		System.out.println("1) Cambiar paralelo de un alumno.");
+		System.out.println("2) Eliminar alumno del curso.");
+		System.out.println("3) Inscribir alumno nuevo");
+		System.out.println("4) Salir.");
+		System.out.print("Seleccione una opcion: ");
+		int respuesta = scanner.nextInt();
+		respuesta = controlError(respuesta, 1, 4);
+		if (lectura && procesados) {
+			if (respuesta == 1) {
+				System.out.print("Seleccione el RUT del alumno: ");
+				String rut = scanner.nextLine();
+				int pos = 0;
+				boolean esta = false;
+				for (int i = 0 ; i < grupo.length; i++) {
+					System.out.println("Alumno: " + nombres[i] + " " + apellidos[i] +"Actualmente en " + paralelos[i]);
+					pos = i;
+					esta = true;
+					break;
+				}
+				if(esta) {
+					System.out.print("Nuevo paralelo (C1/C2): ");
+					String paraleloNuevo = scanner.nextLine();
+					if (!paraleloNuevo.equalsIgnoreCase("C1") && !paraleloNuevo.equalsIgnoreCase("C2")) {
+						while(paraleloNuevo.equalsIgnoreCase("C1") && paraleloNuevo.equalsIgnoreCase("C2")) {
+							System.out.println("Ingrese una opcion valida (C1/C2): ");
+							paraleloNuevo = scanner.nextLine();
+						}
+					}
+					while(paraleloNuevo.equalsIgnoreCase(paralelos[pos])) {
+						System.out.print("El alumno ya esta en ese paralelo, intente de nuevo: ");
+						paraleloNuevo = scanner.nextLine();
+					}
+					paralelos[pos] = paraleloNuevo;
+					System.out.println("El alumno fue cambiado al paralelo " + paralelos[pos]);
+					//FALTA PONERLO EN EL ARCHIVO ALUMNOS.TXT
+				}else {
+					System.out.println("El alumno no esta inscrito a ningun paralelo ");
+				}
+			}
+			if(respuesta == 2) {
+				System.out.print("Seleccione el nombre y apellido del alumno: ");
+				String alumno = scanner.nextLine();
+				String[] partes = alumno.split(" ");
+				String nombre = partes[0];
+				String apellido = partes[1];
+				boolean esta = false;
+				int pos = 0;
+				for(int i = 0 ; i < grupo.length; i++) {
+					if (alumno.equalsIgnoreCase(grupo[i])){
+						esta = true;
+						pos = i;
+						break;
+					}
+				}
+				if (esta) {
+					for(int i = pos; i < grupo.length;i++) {
+						if (i == pos) {
+							grupo[pos] = null;
+						}if(i == pos + 1) {
+							grupo[pos] = grupo[pos + 1];
+						}else {
+							grupo[i] = grupo[i+1];
+						}
+					}
+					System.out.println("El alumno fue eliminado del grupo...");
+				}
+				else {
+					System.out.println("El alumno no esta en ninguno de los dos paralelos...");
+				}
+			}
+		}else {
+			System.out.println("Por favor, primero cargue y filtre los archivos...");
+		} 
 	}
 
 	private static void opcion3() {
