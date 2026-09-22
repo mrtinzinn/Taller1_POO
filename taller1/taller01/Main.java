@@ -25,7 +25,7 @@ public class Main {
 	public static boolean procesados = false; // caiga el codigo.
 
 	public static void main(String[] args) throws FileNotFoundException {
-
+		
 		printMenu();
 		int opcion = scanner.nextInt();
 		opcion = controlError(opcion, 1, 7);
@@ -59,12 +59,161 @@ public class Main {
 			if(opcion == 4) {
 				opcion4();
 			}
+			if (opcion ==5) {
+				opcion5();
+			}
 			System.out.println();
 			printMenu();
 			opcion = scanner.nextInt();
 			opcion = controlError(opcion, 1, 7);
 		}
 		System.out.println("Saliendo... Nos vemos!");
+	}
+
+	private static void opcion5() {
+		if (lectura && procesados) {
+			System.out.println("-- Generar reportes --");
+			System.out.println("1) Nuevo paralelo C1.");
+			System.out.println("2) Nuevo paralelo C2.");
+			System.out.println("3) Reporte rechazados.");
+			System.out.println("4) Volver");
+			System.out.print("Ingrese una respuesta: ");
+			int respuesta = scanner.nextInt();
+			respuesta = controlError(respuesta, 1, 4);
+			if(respuesta == 1) {
+				generarReporteC1();
+			}
+			if(respuesta == 2) {
+				generarReporteC2();
+			}
+			if(respuesta == 3) {
+				generarReporteRechazados();
+			}
+			
+			
+		}else {
+			System.out.println("Primero debe cargar los archivos.");
+		}
+		
+		
+	}
+
+	private static void generarReporteRechazados() {
+
+		int version = 1;
+
+		String nombreArchivo = "Reportes/Rechazados-V" + version + ".txt";
+
+		while (new File(nombreArchivo).exists()) {
+		    version++;
+		    nombreArchivo = "Reportes/Rechazados-V" + version + ".txt";
+		}
+		try {
+			File carpeta = new File("Reportes");
+			if (!carpeta.exists()) {
+				carpeta.mkdir();
+			}
+
+			FileWriter archivo = new FileWriter(nombreArchivo);
+			BufferedWriter escritor = new BufferedWriter(archivo);
+			escritor.write("=== Solicitudes rechazadas ===");
+			escritor.newLine();
+
+			for (int i = 0; i < rechazados.length; i++) {
+				if (rechazados[i] != null) {
+					if (rechazados[i].contains(" ")) {
+						
+						escritor.write(rechazados[i] + " - No pertenece a ningun paralelo del curso");
+					} else {
+						escritor.write("Sin nombre registrado, RUT: " + rechazados[i]);
+					}
+					escritor.newLine();
+				}
+			}
+			escritor.close();
+
+			System.out.println("Reporte de rechazados generado correctamente.");
+		} catch (IOException e) {
+			System.out.println("No se pudo generar el reporte.");
+		}
+
+	}
+
+	private static void generarReporteC2() {
+
+		int version = 1;
+
+		String nombreArchivo = "Reportes/ReporteC2-V" + version + ".txt";
+
+		while (new File(nombreArchivo).exists()) {
+		    version++;
+		    nombreArchivo = "Reportes/ReporteC2-V" + version + ".txt";
+		}
+		try {
+			File carpeta = new File("Reportes");
+			if (!carpeta.exists()) {
+				carpeta.mkdir();
+			}
+
+			FileWriter archivo = new FileWriter(nombreArchivo);
+			BufferedWriter escritor = new BufferedWriter(archivo);
+			escritor.write("=== Miembros del grupo - Paralelo C2 ===");
+			escritor.newLine();
+			for (int i = 0; i < grupo.length; i++) {
+				if (grupo[i] != null) {
+					for (int j = 0; j < cantAlumnos; j++) {
+						String persona = nombres[j] + " " + apellidos[j];
+						if (grupo[i].equalsIgnoreCase(persona) && paralelos[j].equalsIgnoreCase("C2")) {
+							escritor.write(persona + " - " + ruts[j]);
+							escritor.newLine();
+						}
+					}
+				}
+			}
+			escritor.close();
+			System.out.println("Reporte C2 generado correctamente.");
+		} catch (IOException e) {
+			System.out.println("No se pudo generar el reporte.");
+		}
+	}
+
+	private static void generarReporteC1() {
+
+		int version = 1;
+
+		String nombreArchivo = "Reportes/ReporteC1-V" + version + ".txt";
+
+		while (new File(nombreArchivo).exists()) {
+		    version++;
+		    nombreArchivo = "Reportes/ReporteC1-V" + version + ".txt";
+		}
+		try {
+			File carpeta = new File("Reportes");
+			if (!carpeta.exists()) {
+				carpeta.mkdir();
+			}
+
+			FileWriter archivo = new FileWriter(nombreArchivo);
+			BufferedWriter escritor = new BufferedWriter(archivo);
+			escritor.write("=== Miembros del grupo - Paralelo C1 ===");
+			escritor.newLine();
+
+			for (int i = 0; i < grupo.length; i++) {
+				if (grupo[i] != null) {
+					for (int j = 0; j < cantAlumnos; j++) {
+						String persona = nombres[j] + " " + apellidos[j];
+						if (grupo[i].equalsIgnoreCase(persona) && paralelos[j].equalsIgnoreCase("C1")) {
+							escritor.write(persona + " - " + ruts[j]);
+							escritor.newLine();
+						}
+					}
+				}
+			}
+			escritor.close();
+			System.out.println("Reporte C1 generado correctamente.");
+		} catch (IOException e) {
+			System.out.println("No se pudo generar el reporte.");
+		}
 	}
 
 	private static void opcion4() {
@@ -192,7 +341,7 @@ public class Main {
 					}
 					System.out.println("El alumno fue eliminado del curso.");
 
-					// FALTA ELIMINARLO DE ALUMNOS.TXT
+					
 
 				} else {
 					System.out.println("El alumno no esta inscrito en el curso.");
@@ -250,7 +399,6 @@ public class Main {
 					System.out.println("El alumno fue inscrito al curso.");
 					System.out.println("Recuerde que debe inscribirse al grupo por separado.");
 
-					// FALTA CARGAR EL ARCHIVO ALUMNOS.TXT
 				}
 			}
 		} else {
@@ -269,22 +417,26 @@ public class Main {
 
 		escritor.close();
 	}
+	
 	private static void opcion3() {
+
 		System.out.println("¿Como desea inscribir a la persona?");
 		System.out.println("1) Por nombre completo.");
 		System.out.println("2) Por RUT.");
 		System.out.print("Ingrese una opcion: ");
+
 		int respuesta = scanner.nextInt();
 		respuesta = controlError(respuesta, 1, 2);
 		scanner.nextLine();
+
 		if (lectura && procesados) {
+
 			if (respuesta == 1) {
 
 				System.out.print("Ingrese el nombre y apellido de la persona: ");
 				String persona = scanner.nextLine();
 
 				String[] partes = persona.split(" ");
-
 				String nombre = partes[0];
 				String apellido = partes[1];
 
@@ -297,7 +449,6 @@ public class Main {
 					if (grupo[i] != null) {
 
 						if (grupo[i].equalsIgnoreCase(nombre + " " + apellido)) {
-
 							estaEnGrupo = true;
 							break;
 						}
@@ -305,6 +456,7 @@ public class Main {
 				}
 
 				if (estaEnGrupo) {
+
 					System.out.println("La persona ya esta en el grupo.");
 
 				} else {
@@ -312,20 +464,27 @@ public class Main {
 					// BUSCAR SI LA PERSONA EXISTE EN ALUMNOS
 					for (int i = 0; i < cantAlumnos; i++) {
 
-						if (nombres[i].equalsIgnoreCase(nombre) && apellidos[i].equalsIgnoreCase(apellido)) {
+						if (nombres[i].equalsIgnoreCase(nombre)
+								&& apellidos[i].equalsIgnoreCase(apellido)) {
+
 							estaEnAlumnos = true;
 							break;
 						}
 					}
 
 					if (estaEnAlumnos) {
+
 						// BUSCAR ESPACIO EN EL GRUPO
 						boolean agregado = false;
 
 						for (int i = 0; i < grupo.length; i++) {
+
 							if (grupo[i] == null) {
+
 								grupo[i] = nombre + " " + apellido;
+
 								System.out.println("La persona fue añadida al grupo.");
+
 								agregado = true;
 								break;
 							}
@@ -336,89 +495,135 @@ public class Main {
 						}
 
 					} else {
+
 						System.out.println("La persona no forma parte de ningun paralelo");
 
 						// AGREGAR A RECHAZADOS
 						boolean agregado = false;
+
 						for (int i = 0; i < rechazados.length; i++) {
 
 							if (rechazados[i] == null) {
+
 								rechazados[i] = nombre + " " + apellido;
+
 								System.out.println("La persona fue añadida a rechazados...");
+
 								agregado = true;
 								break;
 							}
 						}
+
 						if (!agregado) {
 							System.out.println("El grupo de rechazados esta lleno...");
 						}
 					}
 				}
 			}
+
 			if (respuesta == 2) {
+
 				System.out.print("Ingrese el rut de la persona: ");
 				String rut = scanner.nextLine();
+
 				boolean res = false;
 				int pos = 0;
-				for (int i = 0; i < ruts.length; i++) {
+
+				// BUSCAR EL RUT
+				for (int i = 0; i < cantAlumnos; i++) {
+
 					if (rut.equalsIgnoreCase(ruts[i])) {
+
 						pos = i;
 						res = true;
 						break;
 					}
 				}
-				if (res) { // SI EL RUT PERTENECE AL GRUPO
+
+				if (res) {
+
+					// EL RUT SI PERTENECE AL CURSO
+
 					String persona = nombres[pos] + " " + apellidos[pos];
+
 					System.out.println("Persona: " + persona);
+
 					boolean estaEnGrupo = false;
+
+					// BUSCAR SI YA ESTA EN EL GRUPO
 					for (int j = 0; j < grupo.length; j++) {
 
 						if (grupo[j] != null) {
+
 							if (grupo[j].equalsIgnoreCase(persona)) {
+
 								estaEnGrupo = true;
 								break;
 							}
 						}
 					}
+
 					if (estaEnGrupo) {
+
 						System.out.println("La persona ya esta en el grupo.");
+
 					} else {
-						// BUSCAR EN EL GRUPO
+
+						// BUSCAR ESPACIO EN EL GRUPO
 						boolean agregado = false;
+
 						for (int i = 0; i < grupo.length; i++) {
+
 							if (grupo[i] == null) {
+
 								grupo[i] = persona;
+
 								System.out.println("La persona fue añadida al grupo.");
+
 								agregado = true;
 								break;
 							}
 						}
+
 						if (!agregado) {
 							System.out.println("El grupo esta lleno");
-						} else {
-							System.out.println("El rut no pertenece a ningun paralelo.");
-							System.out.println(
-									"No tenemos su nombre ,por lo que se agregara el RUT en los rechazados");
-							for (int i = 0; i < rechazados.length; i++) {
-								if (rechazados[i] == null) {
-									rechazados[i] = rut;
-									System.out.println("El rut fue añadido a rechazados");
-									agregado = true;
-									break;
-								}
-							}
-							if (!agregado) {
-								System.out.println("El grupo esta lleno.");
-							}
 						}
+					}
+
+				} else {
+
+					// EL RUT NO PERTENECE AL CURSO
+
+					System.out.println("El rut no pertenece a ningun paralelo.");
+					System.out.println("No tenemos su nombre, por lo que se agregara el RUT en los rechazados");
+
+					boolean agregado = false;
+
+					for (int i = 0; i < rechazados.length; i++) {
+
+						if (rechazados[i] == null) {
+
+							rechazados[i] = rut;
+
+							System.out.println("El rut fue añadido a rechazados");
+
+							agregado = true;
+							break;
+						}
+					}
+
+					if (!agregado) {
+						System.out.println("El grupo de rechazados esta lleno.");
 					}
 				}
 			}
+
 		} else {
-			System.out.println("Lo lamentamos , no se han podido cargar los archivos");
+
+			System.out.println("Lo lamentamos, no se han podido cargar los archivos");
 		}
-		
 	}
+
 
 	private static void opcion2() {
 		System.out.println("Procesando solicitudes...");
