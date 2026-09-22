@@ -5,7 +5,11 @@ package taller01;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.Scanner;
+
 
 public class Main {
 	public static Scanner scanner = new Scanner(System.in);
@@ -64,82 +68,207 @@ public class Main {
 	}
 
 	private static void opcion4() {
+
 		System.out.println("-- Administracion del curso --");
+
 		System.out.println("1) Cambiar paralelo de un alumno.");
 		System.out.println("2) Eliminar alumno del curso.");
 		System.out.println("3) Inscribir alumno nuevo");
 		System.out.println("4) Salir.");
+
 		System.out.print("Seleccione una opcion: ");
+
 		int respuesta = scanner.nextInt();
 		respuesta = controlError(respuesta, 1, 4);
-		if (lectura && procesados) {
+		scanner.nextLine();
+
+		if (lectura) {
+
 			if (respuesta == 1) {
 				System.out.print("Seleccione el RUT del alumno: ");
 				String rut = scanner.nextLine();
 				int pos = 0;
 				boolean esta = false;
-				for (int i = 0 ; i < grupo.length; i++) {
-					System.out.println("Alumno: " + nombres[i] + " " + apellidos[i] +"Actualmente en " + paralelos[i]);
-					pos = i;
-					esta = true;
-					break;
-				}
-				if(esta) {
-					System.out.print("Nuevo paralelo (C1/C2): ");
-					String paraleloNuevo = scanner.nextLine();
-					if (!paraleloNuevo.equalsIgnoreCase("C1") && !paraleloNuevo.equalsIgnoreCase("C2")) {
-						while(paraleloNuevo.equalsIgnoreCase("C1") && paraleloNuevo.equalsIgnoreCase("C2")) {
-							System.out.println("Ingrese una opcion valida (C1/C2): ");
-							paraleloNuevo = scanner.nextLine();
-						}
-					}
-					while(paraleloNuevo.equalsIgnoreCase(paralelos[pos])) {
-						System.out.print("El alumno ya esta en ese paralelo, intente de nuevo: ");
-						paraleloNuevo = scanner.nextLine();
-					}
-					paralelos[pos] = paraleloNuevo;
-					System.out.println("El alumno fue cambiado al paralelo " + paralelos[pos]);
-					//FALTA PONERLO EN EL ARCHIVO ALUMNOS.TXT
-				}else {
-					System.out.println("El alumno no esta inscrito a ningun paralelo ");
-				}
-			}
-			if(respuesta == 2) {
-				System.out.print("Seleccione el nombre y apellido del alumno: ");
-				String alumno = scanner.nextLine();
-				String[] partes = alumno.split(" ");
-				String nombre = partes[0];
-				String apellido = partes[1];
-				boolean esta = false;
-				int pos = 0;
-				for(int i = 0 ; i < grupo.length; i++) {
-					if (alumno.equalsIgnoreCase(grupo[i])){
+
+				// BUSCAR EL ALUMNO POR RUT
+				for (int i = 0; i < cantAlumnos; i++) {
+					if (ruts[i].equalsIgnoreCase(rut)) {
 						esta = true;
 						pos = i;
 						break;
 					}
 				}
+
 				if (esta) {
-					for(int i = pos; i < grupo.length;i++) {
-						if (i == pos) {
-							grupo[pos] = null;
-						}if(i == pos + 1) {
-							grupo[pos] = grupo[pos + 1];
-						}else {
-							grupo[i] = grupo[i+1];
+
+					System.out.println("Alumno: " + nombres[pos] + " " + apellidos[pos] + " actualmente pertenece a " + paralelos[pos]);
+					System.out.print("Nuevo paralelo (C1/C2): ");
+					String paraleloNuevo = scanner.nextLine();
+					// VALIDAR PARALELO
+					while (!paraleloNuevo.equalsIgnoreCase("C1")
+							&& !paraleloNuevo.equalsIgnoreCase("C2")) {
+						System.out.println("Ingrese una opcion valida (C1/C2): ");
+						paraleloNuevo = scanner.nextLine();
+					}
+
+					// VERIFICAR QUE NO SEA EL MISMO PARALELO
+					while (paraleloNuevo.equalsIgnoreCase(paralelos[pos])) {
+						System.out.print("El alumno ya esta en ese paralelo, intente de nuevo: ");
+						paraleloNuevo = scanner.nextLine();
+						while (!paraleloNuevo.equalsIgnoreCase("C1")
+								&& !paraleloNuevo.equalsIgnoreCase("C2")) {
+							System.out.println("Ingrese una opcion valida (C1/C2): ");
+							paraleloNuevo = scanner.nextLine();
 						}
 					}
-					System.out.println("El alumno fue eliminado del grupo...");
-				}
-				else {
-					System.out.println("El alumno no esta en ninguno de los dos paralelos...");
+
+					// CAMBIAR PARALELO
+					paralelos[pos] = paraleloNuevo;
+					System.out.println("El alumno fue cambiado al paralelo " + paralelos[pos]);
+					try {
+						guardaralumnos();
+					}catch (Exception e) {
+						System.out.println("No se pudo actualizar el archivo...");
+					}
+					
+				} else {
+					System.out.println("El RUT no pertenece a ningun alumno del curso.");
 				}
 			}
-		}else {
-			System.out.println("Por favor, primero cargue y filtre los archivos...");
-		} 
-	}
 
+			if (respuesta == 2) {
+				System.out.print("Seleccione el nombre y apellido del alumno: ");
+				String alumno = scanner.nextLine();
+
+				int pos = 0;
+				boolean esta = false;
+
+				// BUSCAR AL ALUMNO EN LOS VECTORES DE ALUMNOS
+				for (int i = 0; i < cantAlumnos; i++) {
+					String persona = nombres[i] + " " + apellidos[i];
+					if (alumno.equalsIgnoreCase(persona)) {
+						esta = true;
+						pos = i;
+						break;
+					}
+				}
+
+				if (esta) {
+
+					// ELIMINAR ALUMNO DE LOS VECTORES
+					for (int i = pos; i < cantAlumnos - 1; i++) {
+						nombres[i] = nombres[i + 1];
+						apellidos[i] = apellidos[i + 1];
+						ruts[i] = ruts[i + 1];
+						paralelos[i] = paralelos[i + 1];
+					}
+
+					// DEJAR LIBRE LA ULTIMA POSICION
+					nombres[cantAlumnos - 1] = null;
+					apellidos[cantAlumnos - 1] = null;
+					ruts[cantAlumnos - 1] = null;
+					paralelos[cantAlumnos - 1] = null;
+
+					cantAlumnos--;
+					try {
+						guardaralumnos();
+					}catch (Exception e) {
+						System.out.println("No se pudo actualizar el archivo...");
+					}
+					
+					// BUSCAR SI ESTABA EN EL GRUPO
+					for (int i = 0; i < grupo.length; i++) {
+						if (grupo[i] != null) {
+							if (grupo[i].equalsIgnoreCase(alumno)) {
+
+								// DESPLAZAR LOS ELEMENTOS DEL GRUPO
+								for (int j = i; j < grupo.length - 1; j++) {
+									grupo[j] = grupo[j + 1];
+								}
+								grupo[grupo.length - 1] = null;
+								break;
+							}
+						}
+					}
+					System.out.println("El alumno fue eliminado del curso.");
+
+					// FALTA ELIMINARLO DE ALUMNOS.TXT
+
+				} else {
+					System.out.println("El alumno no esta inscrito en el curso.");
+				}
+			}
+
+			if (respuesta == 3) {
+				System.out.println("Ingrese su nombre y su apellido: ");
+				String alumno = scanner.nextLine();
+				String[] partes = alumno.split(" ");
+				String nombre = partes[0];
+				String apellido = partes[1];
+				
+				System.out.println("Ingrese su rut: ");
+				String rut = scanner.nextLine();
+
+				// VERIFICAR SI EL RUT YA EXISTE
+				boolean existe = false;
+				for (int i = 0; i < cantAlumnos; i++) {
+					if (ruts[i].equalsIgnoreCase(rut)) {
+						existe = true;
+						break;
+					}
+				}
+
+				if (existe) {
+					System.out.println("El RUT ya pertenece a un alumno del curso.");
+				} else if (cantAlumnos >= 100) {
+					System.out.println("El curso se encuentra lleno.");
+
+				} else {
+
+					System.out.println("Ingrese su paralelo: ");
+					String paralelo = scanner.nextLine();
+					
+					// VALIDAR PARALELO
+					while (!paralelo.equalsIgnoreCase("C1") && !paralelo.equalsIgnoreCase("C2")) {
+						System.out.println("Ingrese un paralelo correcto (C1/C2): ");
+						paralelo = scanner.nextLine();
+					}
+
+					// AGREGAR ALUMNO A LOS VECTORES
+					nombres[cantAlumnos] = nombre;
+					apellidos[cantAlumnos] = apellido;
+					ruts[cantAlumnos] = rut;
+					paralelos[cantAlumnos] = paralelo;
+
+					cantAlumnos++;
+					try {
+						guardaralumnos();
+					} catch (IOException e) {
+						System.out.println("No se pudo actualizar Alumnos.txt");
+					}
+					
+					System.out.println("El alumno fue inscrito al curso.");
+					System.out.println("Recuerde que debe inscribirse al grupo por separado.");
+
+					// FALTA CARGAR EL ARCHIVO ALUMNOS.TXT
+				}
+			}
+		} else {
+			System.out.println("Por favor, primero cargue los archivos...");
+		}
+	}
+	private static void guardaralumnos() throws IOException{
+		FileWriter archivo = new FileWriter("txt's/alumnos.txt");
+		BufferedWriter escritor = new BufferedWriter(archivo);
+
+		for (int i = 0; i < cantAlumnos; i++) {
+
+			escritor.write(nombres[i] + ";" + apellidos[i] + ";" + ruts[i] + ";" + paralelos[i]);
+			escritor.newLine();
+		}
+
+		escritor.close();
+	}
 	private static void opcion3() {
 		System.out.println("¿Como desea inscribir a la persona?");
 		System.out.println("1) Por nombre completo.");
