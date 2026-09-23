@@ -62,12 +62,89 @@ public class Main {
 			if (opcion ==5) {
 				opcion5();
 			}
+			if(opcion == 6) {
+				opcion6();
+			}
 			System.out.println();
 			printMenu();
 			opcion = scanner.nextInt();
 			opcion = controlError(opcion, 1, 7);
 		}
 		System.out.println("Saliendo... Nos vemos!");
+	}
+
+	private static void opcion6() {
+
+	    if (lectura && procesados) {
+
+	        System.out.println("-- Analisis estadistico --");
+	        int admitidos = 0;
+	        int rechazadosTotal = 0;
+	        int c1 = 0;
+	        int c2 = 0;
+	        // CONTAR ADMITIDOS
+	        for (int i = 0; i < grupo.length; i++) {
+	            if (grupo[i] != null) {
+	                admitidos++;
+	            }
+	        }
+
+	        // CONTAR RECHAZADOS
+	        for (int i = 0; i < rechazados.length; i++) {
+	            if (rechazados[i] != null) {
+	                rechazadosTotal++;
+	            }
+	        }
+
+	        // CONTAR ALUMNOS POR PARALELO
+	        for (int i = 0; i < cantAlumnos; i++) {
+	            if (paralelos[i].equalsIgnoreCase("C1")) {
+	                c1++;
+	            }
+	            if (paralelos[i].equalsIgnoreCase("C2")) {
+	                c2++;
+	            }
+	        }
+
+	        // TOTAL DE INTENTOS
+	        int totalIntentos = admitidos + rechazadosTotal;
+	        
+	        // PORCENTAJE DE RECHAZADOS
+	        double porcentajeRechazados = 0;
+
+	        if (totalIntentos > 0) {
+	            porcentajeRechazados = rechazadosTotal * 100.0 / totalIntentos;
+	        }
+
+	        // TASA DE ADMISION
+	        double tasaAdmision = 0;
+	        if (totalIntentos > 0) {
+	            tasaAdmision = admitidos * 100.0 / totalIntentos;
+	        }
+
+	        // PORCENTAJES DE CADA PARALELO
+	        double porcentajeC1 = 0;
+	        double porcentajeC2 = 0;
+
+	        if (cantAlumnos > 0) {
+	            porcentajeC1 = c1 * 100.0 / cantAlumnos;
+	            porcentajeC2 = c2 * 100.0 / cantAlumnos;
+	        }
+
+	        System.out.println();
+	        System.out.println("Total de intentos: " + totalIntentos);
+	        System.out.println("Solicitudes rechazadas: " + rechazadosTotal);
+	        System.out.println("Porcentaje de solicitudes rechazadas: " + porcentajeRechazados + "%");
+	        System.out.println();
+	        System.out.println("-- Alumnos por paralelo --");
+	        System.out.println("C1: " + c1 + " alumnos (" + porcentajeC1 + "%)");
+	        System.out.println("C2: " + c2 + " alumnos (" + porcentajeC2 + "%)");
+	        System.out.println();
+	        System.out.println("Tasa de admision: " + tasaAdmision + "%");
+
+	    } else {
+	        System.out.println("Primero debe cargar y procesar los archivos.");
+	    }
 	}
 
 	private static void opcion5() {
@@ -89,13 +166,9 @@ public class Main {
 			if(respuesta == 3) {
 				generarReporteRechazados();
 			}
-			
-			
 		}else {
 			System.out.println("Primero debe cargar los archivos.");
 		}
-		
-		
 	}
 
 	private static void generarReporteRechazados() {
