@@ -24,24 +24,33 @@ public class Main {
 	public static boolean lectura = false; // Creo un booleando que verifica si se leyeron ambos archivos para que no se
 	public static boolean procesados = false; // caiga el codigo.
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) {
 		
 		printMenu();
-		int opcion = scanner.nextInt();
+		int opcion = leerOpcion();
 		opcion = controlError(opcion, 1, 7);
 		// CREAR WHILE Y OPCIONES DEL MENU
 
 		while (opcion != 7) {
 
-			if (opcion == 1) { // CARGAR ARCHIVOS
-				if (!lectura) {
-					System.out.println("Cargando archivos...");
-					cantAlumnos = leerAlumnos();
-					solicitudes();
-					System.out.println("Los archivos han sido cargados con exito.");
-					lectura = true;
-				}
+			if (opcion == 1) { //CARGAR ARCHIVOS
+			    if (!lectura) {
+			        System.out.println("Cargando archivos...");
 
+			        try {
+			            cantAlumnos = leerAlumnos();
+			            solicitudes();
+
+			            System.out.println("Los archivos han sido cargados con exito.");
+			            lectura = true;
+
+			        } catch (FileNotFoundException e) {
+			            System.out.println("No se pudo cargar uno de los archivos.");
+			            System.out.println("Verifique que existan alumnos.txt y solicitudes.txt.");
+			            lectura = false;
+			            cantAlumnos = 0;
+			        }
+			    }
 			}
 			if (opcion == 2) { // FILTRAR ALUMNOS
 
@@ -67,12 +76,23 @@ public class Main {
 			}
 			System.out.println();
 			printMenu();
-			opcion = scanner.nextInt();
+			opcion = leerOpcion();
 			opcion = controlError(opcion, 1, 7);
 		}
 		System.out.println("Saliendo... Nos vemos!");
 	}
 
+	private static int leerOpcion() {
+	    while (!scanner.hasNextInt()) {
+	        System.out.println("Debe ingresar un numero.");
+	        scanner.nextLine();
+	        System.out.print("Seleccione una opcion: ");
+	    }
+
+	    int opcion = scanner.nextInt();
+	    return opcion;
+	}
+	
 	private static void opcion6() {
 
 	    if (lectura && procesados) {
@@ -155,7 +175,7 @@ public class Main {
 			System.out.println("3) Reporte rechazados.");
 			System.out.println("4) Volver");
 			System.out.print("Ingrese una respuesta: ");
-			int respuesta = scanner.nextInt();
+			int respuesta = leerOpcion();
 			respuesta = controlError(respuesta, 1, 4);
 			if(respuesta == 1) {
 				generarReporteC1();
@@ -300,7 +320,7 @@ public class Main {
 
 		System.out.print("Seleccione una opcion: ");
 
-		int respuesta = scanner.nextInt();
+		int respuesta = leerOpcion();
 		respuesta = controlError(respuesta, 1, 4);
 		scanner.nextLine();
 
@@ -498,7 +518,7 @@ public class Main {
 		System.out.println("2) Por RUT.");
 		System.out.print("Ingrese una opcion: ");
 
-		int respuesta = scanner.nextInt();
+		int respuesta = leerOpcion();
 		respuesta = controlError(respuesta, 1, 2);
 		scanner.nextLine();
 
@@ -763,13 +783,19 @@ public class Main {
 	}
 
 	private static int controlError(int opcion, int parametro1, int parametro2) {
+	    while (opcion < parametro1 || opcion > parametro2) {
+	        System.out.print("Porfavor, seleccione una opcion valida: ");
 
-		while (opcion < parametro1 || opcion > parametro2) { // En caso de que no se seleccione una opcion dentro del
-																// rango
-			System.out.print("Porfavor , seleccione una opcion valida:");
-			opcion = scanner.nextInt();
-		}
-		return opcion;
+	        while (!scanner.hasNextInt()) {
+	            System.out.println("Debe ingresar un numero.");
+	            scanner.nextLine();
+	            System.out.print("Seleccione una opcion: ");
+	        }
+
+	        opcion = scanner.nextInt();
+	    }
+
+	    return opcion;
 	}
 
 	private static void printMenu() {
@@ -799,6 +825,7 @@ public class Main {
 			solicitud[cont] = nombre + " " + apellido;
 			cont++;
 		}
+		sFile.close();
 	}
 
 	private static int leerAlumnos() throws FileNotFoundException {
