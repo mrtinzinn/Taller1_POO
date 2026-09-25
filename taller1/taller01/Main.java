@@ -1,4 +1,4 @@
-//Martin Hofer Ochoa - 22.368.055-0 - mrtinzinn
+//Martin Hofer Ochoa - 22.368.055-0 - ICCI
 //https://github.com/mrtinzinn/Taller1_POO/tree/main	
 
 package taller01;
