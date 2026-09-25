@@ -82,6 +82,8 @@ public class Main {
 		System.out.println("Saliendo... Nos vemos!");
 	}
 
+	
+	
 	private static int leerOpcion() {
 	    while (!scanner.hasNextInt()) {
 	        System.out.println("Debe ingresar un numero.");
@@ -193,43 +195,41 @@ public class Main {
 
 	private static void generarReporteRechazados() {
 
-		int version = 1;
+	    int version = 1;
+	    String nombreArchivo = "Reportes/Rechazados-V" + version + ".txt";
+	    while (new File(nombreArchivo).exists()) {
+	        version++;
+	        nombreArchivo = "Reportes/Rechazados-V" + version + ".txt";
+	    }
 
-		String nombreArchivo = "Reportes/Rechazados-V" + version + ".txt";
+	    try {
+	        File carpeta = new File("Reportes");
+	        if (!carpeta.exists()) {
+	            carpeta.mkdir();
+	        }
 
-		while (new File(nombreArchivo).exists()) {
-		    version++;
-		    nombreArchivo = "Reportes/Rechazados-V" + version + ".txt";
-		}
-		try {
-			File carpeta = new File("Reportes");
-			if (!carpeta.exists()) {
-				carpeta.mkdir();
-			}
+	        FileWriter archivo = new FileWriter(nombreArchivo);
+	        BufferedWriter escritor = new BufferedWriter(archivo);
+	        escritor.write("=== Solicitudes rechazadas ===");
+	        escritor.newLine();
 
-			FileWriter archivo = new FileWriter(nombreArchivo);
-			BufferedWriter escritor = new BufferedWriter(archivo);
-			escritor.write("=== Solicitudes rechazadas ===");
-			escritor.newLine();
-
-			for (int i = 0; i < rechazados.length; i++) {
-				if (rechazados[i] != null) {
-					if (rechazados[i].contains(" ")) {
-						
-						escritor.write(rechazados[i] + " - No pertenece a ningun paralelo del curso");
-					} else {
-						escritor.write("Sin nombre registrado, RUT: " + rechazados[i]);
-					}
-					escritor.newLine();
-				}
-			}
-			escritor.close();
-
-			System.out.println("Reporte de rechazados generado correctamente.");
-		} catch (IOException e) {
-			System.out.println("No se pudo generar el reporte.");
-		}
-
+	        for (int i = 0; i < rechazados.length; i++) {
+	            if (rechazados[i] != null) {
+	                if (rechazados[i].contains(" ")) {
+	                    escritor.write(rechazados[i] + " - No pertenece a ningun paralelo del curso");
+	                } else {
+	                    escritor.write("Sin nombre registrado, RUT: " + rechazados[i]);
+	                }
+	                escritor.newLine();
+	            }
+	        }
+	        escritor.close();
+	        System.out.println("Reporte de rechazados generado correctamente.");
+	        System.out.println("Archivo creado: " + nombreArchivo);
+	        
+	    } catch (IOException e) {
+	        System.out.println("No se pudo generar el reporte.");
+	    }
 	}
 
 	private static void generarReporteC2() {
@@ -442,11 +442,20 @@ public class Main {
 			}
 
 			if (respuesta == 3) {
-				System.out.println("Ingrese su nombre y su apellido: ");
-				String alumno = scanner.nextLine();
-				String[] partes = alumno.split(" ");
-				String nombre = partes[0];
-				String apellido = partes[1];
+			    System.out.println("Ingrese su nombre y su apellido: ");
+			    String alumno = scanner.nextLine();
+
+			    String[] partes = alumno.split(" ");
+
+			    while (partes.length != 2) {
+			        System.out.println("Debe ingresar nombre y apellido.");
+			        System.out.print("Ingrese nuevamente el nombre y apellido: ");
+			        alumno = scanner.nextLine();
+			        partes = alumno.split(" ");
+			    }
+
+			    String nombre = partes[0];
+			    String apellido = partes[1];
 				
 				System.out.println("Ingrese su rut: ");
 				String rut = scanner.nextLine();
@@ -530,6 +539,14 @@ public class Main {
 				String persona = scanner.nextLine();
 
 				String[] partes = persona.split(" ");
+
+				while (partes.length != 2) {
+				    System.out.println("Debe ingresar nombre y apellido.");
+				    System.out.print("Ingrese nuevamente el nombre y apellido: ");
+				    persona = scanner.nextLine();
+				    partes = persona.split(" ");
+				}
+
 				String nombre = partes[0];
 				String apellido = partes[1];
 
@@ -719,48 +736,74 @@ public class Main {
 
 
 	private static void opcion2() {
-		System.out.println("Procesando solicitudes...");
-		System.out.println();
 
-		int contGrupo = 0;
-		int contRechazo = 0;
-		for (int i = 0; i < solicitud.length; i++) {
+	    System.out.println("Procesando solicitudes...");
+	    System.out.println();
+	    int contGrupo = 0;
+	    int contRechazo = 0;
 
-			if (solicitud[i] != null) {
+	    // Buscar el primer espacio disponible en grupo
+	    while (contGrupo < grupo.length && grupo[contGrupo] != null) {
+	        contGrupo++;
+	    }
 
-				String linea = solicitud[i];
-				String[] partes = linea.split(" ");
+	    // Buscar el primer espacio disponible en rechazados
+	    while (contRechazo < rechazados.length && rechazados[contRechazo] != null) {
+	        contRechazo++;
+	    }
 
-				String nombre = partes[0];
-				String apellido = partes[1];
+	    for (int i = 0; i < solicitud.length; i++) {
 
-				boolean pertenece = busqueda(nombre, apellido);
+	        if (solicitud[i] != null) {
+	            String linea = solicitud[i];
+	            String[] partes = linea.split(" ");
 
-				if (!pertenece) {
-					boolean encontrado = false;
-					int pos = 0;
-					for (int j = 0; j < cantAlumnos; j++) {
+	            // Verificar que tenga nombre y apellido
+	            if (partes.length < 2) {
+	                System.out.println("[RECHAZO] Solicitud con formato incorrecto.");
+	            } else {
+	                String nombre = partes[0];
+	                String apellido = partes[1];
 
-						if (nombres[j].equalsIgnoreCase(nombre) && apellidos[j].equalsIgnoreCase(apellido)) {
-							encontrado = true;
-							pos = j;
-							break;
-						}
-					}
-					if (encontrado) {
-						grupo[contGrupo] = nombre + " " + apellido;
-						System.out.println("[OK] " + nombre + " " + apellido + " -> Añadido a paralelo " + paralelos[pos] );
-						contGrupo++;
-					} else {
-						rechazados[contRechazo] = nombre + " " + apellido;
-						System.out.println("[RECHAZO] " + nombre + " " + apellido + " -> Rechazado");
-						contRechazo++;
-					}
-				}
-			}
-		}
-		System.out.println("Resumen: " + contGrupo + " admitidos/ " + contRechazo + " rechazados...");
+	                boolean pertenece = busqueda(nombre, apellido);
+	                if (!pertenece) {
+	                    boolean encontrado = false;
+	                    int pos = 0;
 
+	                    // Buscar persona en alumnos
+	                    for (int j = 0; j < cantAlumnos; j++) {
+	                        if (nombres[j].equalsIgnoreCase(nombre) && apellidos[j].equalsIgnoreCase(apellido)) {
+	                            encontrado = true;
+	                            pos = j;
+	                            break;
+	                        }
+	                    }
+	                    if (encontrado) {
+	                        if (contGrupo < grupo.length) {
+	                            grupo[contGrupo] = nombre + " " + apellido;
+	                            System.out.println("[OK] " + nombre + " " + apellido + " -> Añadido a paralelo " + paralelos[pos]);
+	                            contGrupo++;
+	                        } else {
+	                            System.out.println("El grupo esta lleno.");
+	                        }
+	                    } else {
+
+	                        if (contRechazo < rechazados.length) {
+
+	                            rechazados[contRechazo] = nombre + " " + apellido;
+	                            System.out.println("[RECHAZO] " + nombre + " " + apellido + " -> Rechazado");
+	                            contRechazo++;
+	                        } else {
+
+	                            System.out.println("El grupo de rechazados esta lleno.");
+	                        }
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    System.out.println();
+	    System.out.println("Resumen: " + contGrupo + " admitidos/ " + contRechazo + " rechazados...");
 	}
 
 	private static Boolean busqueda(String nombre, String apellido) {
@@ -813,19 +856,33 @@ public class Main {
 	}
 
 	private static void solicitudes() throws FileNotFoundException {
-		File arch = new File("txt's/solicitudes.txt");
-		Scanner sFile = new Scanner(arch);
-		int cont = 0;
-		while (sFile.hasNextLine()) {
-			String linea = sFile.nextLine();
-			String[] partes = linea.split("-");
-			String nombre = partes[0];
-			String apellido = partes[1];
 
-			solicitud[cont] = nombre + " " + apellido;
-			cont++;
-		}
-		sFile.close();
+	    File arch = new File("txt's/solicitudes.txt");
+	    Scanner sFile = new Scanner(arch);
+
+	    int cont = 0;
+
+	    while (sFile.hasNextLine() && cont < solicitud.length) {
+
+	        String linea = sFile.nextLine();
+
+	        // Verificar que la línea tenga el formato esperado
+	        String[] partes = linea.split("-");
+
+	        if (partes.length >= 2) {
+
+	            String nombre = partes[0].trim();
+	            String apellido = partes[1].trim();
+
+	            if (!nombre.equals("") && !apellido.equals("")) {
+
+	                solicitud[cont] = nombre + " " + apellido;
+	                cont++;
+	            }
+	        }
+	    }
+
+	    sFile.close();
 	}
 
 	private static int leerAlumnos() throws FileNotFoundException {
